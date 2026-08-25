@@ -1,6 +1,6 @@
 # Work Order Data Flywheel
 
-[![CI](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml/badge.svg)](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml)
+[![CI](https://github.com/terziceh/workorder-flywheel/actions/workflows/ci.yml/badge.svg)](https://github.com/terziceh/workorder-flywheel/actions/workflows/ci.yml)
 
 **Project board:** [Work Order Data Flywheel](https://github.com/users/terziceh/projects/7)
 
@@ -49,14 +49,14 @@ flowchart TD
 
 | Issue | Deliverable | Completion evidence |
 |---:|---|---|
-| [#2](https://github.com/terziceh/workorder-ai-flywheel/issues/2) | Load source data into Databricks | Safe screenshots, landing-path explanation, and read verification |
-| [#3](https://github.com/terziceh/workorder-ai-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, metadata, reconciliation, and rerun test |
-| [#4](https://github.com/terziceh/workorder-ai-flywheel/issues/4) | Profile and validate Bronze | Repeatable quality report and documented fixes |
-| [#5](https://github.com/terziceh/workorder-ai-flywheel/issues/5) | Build the Silver pipeline | Clean records, quality exceptions, tests, and reconciliation |
-| [#6](https://github.com/terziceh/workorder-ai-flywheel/issues/6) | Build Gold ML datasets | Reproducible train, validation, test, inference, and evaluation outputs |
-| [#7](https://github.com/terziceh/workorder-ai-flywheel/issues/7) | Analyze labels and modeling strategy | Label-quality findings, taxonomy decisions, and evaluation plan |
-| [#8](https://github.com/terziceh/workorder-ai-flywheel/issues/8) | Train the TF-IDF baseline | MLflow run, Top-k metrics, error analysis, and saved pipeline |
-| [#9](https://github.com/terziceh/workorder-ai-flywheel/issues/9) | Build the hybrid SLM model | Baseline comparison, structured inference, fallbacks, and model card |
+| [#2](https://github.com/terziceh/workorder-flywheel/issues/2) | Load source data into Databricks | Safe screenshots, landing-path explanation, and read verification |
+| [#3](https://github.com/terziceh/workorder-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, metadata, reconciliation, and rerun test |
+| [#4](https://github.com/terziceh/workorder-flywheel/issues/4) | Profile and validate Bronze | Repeatable quality report and documented fixes |
+| [#5](https://github.com/terziceh/workorder-flywheel/issues/5) | Build the Silver pipeline | Clean records, quality exceptions, tests, and reconciliation |
+| [#6](https://github.com/terziceh/workorder-flywheel/issues/6) | Build Gold ML datasets | Reproducible train, validation, test, inference, and evaluation outputs |
+| [#7](https://github.com/terziceh/workorder-flywheel/issues/7) | Analyze labels and modeling strategy | Label-quality findings, taxonomy decisions, and evaluation plan |
+| [#8](https://github.com/terziceh/workorder-flywheel/issues/8) | Train the TF-IDF baseline | MLflow run, Top-k metrics, error analysis, and saved pipeline |
+| [#9](https://github.com/terziceh/workorder-flywheel/issues/9) | Build the hybrid SLM model | Baseline comparison, structured inference, fallbacks, and model card |
 
 ## Tutorial chapters
 
@@ -78,14 +78,14 @@ flowchart TD
 
 ## Current status
 
-**Current issue:** [#3 — Build the Bronze tables and Databricks ingestion notebook](https://github.com/terziceh/workorder-ai-flywheel/issues/3)
+**Current issue:** [#4 — Profile and validate the Bronze work-order data](https://github.com/terziceh/workorder-flywheel/issues/4)
 
 - [x] Repository foundation and public Project board
 - [x] Privacy boundary
 - [x] Documentation and issue structure
 - [x] Repository CI
 - [x] Complete the sanitized Databricks source-landing walkthrough
-- [ ] Build and validate the Bronze ingestion notebook
+- [x] Build and validate the Bronze ingestion notebook
 - [ ] Continue through Silver, Gold, and modeling
 
 ## Repository organization
