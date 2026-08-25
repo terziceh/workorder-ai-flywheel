@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml/badge.svg)](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml)
 
+**Project board:** [Work Order AI Data Flywheel](https://github.com/users/terziceh/projects/7)
+
 An end-to-end tutorial for building a Databricks lakehouse, small language model (SLM) work-code recommendation engine, human-review application, and continuous feedback flywheel using independently generated facilities work orders.
 
 > [!IMPORTANT]
@@ -72,7 +74,7 @@ flowchart TD
 - [x] Synthetic-data generator foundation
 - [x] Unit and integration test foundation
 - [x] Repository CI workflow
-- [ ] Publish GitHub repository and Project board
+- [x] Publish GitHub repository and Project board
 - [ ] Recreate the existing Bronze design using synthetic data
 - [ ] Validate Bronze ingestion through CI fixtures
 
