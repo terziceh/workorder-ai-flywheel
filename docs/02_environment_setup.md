@@ -1,33 +1,93 @@
-# 02 — Environment Setup
+# 02 — Databricks Setup and Source-File Landing
+
+Related issue: [#2 — Load the source data into Databricks and document the setup](https://github.com/terziceh/workorder-ai-flywheel/issues/2)
 
 ## Objective
 
-Provide reproducible setup instructions for local development, GitHub collaboration, and the public Databricks implementation.
+Place the source file in a governed Databricks landing location, verify that it is readable, and document the process without publishing the dataset.
 
-## Local environment
+The private implementation can use authorized operational data. Public instructions, screenshots, paths, examples, and downloadable files must remain synthetic, sanitized, or safely generalized.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-make check
+## Prerequisites
+
+- Access to a Databricks workspace
+- Unity Catalog enabled
+- Permission to create or use a catalog, schema, and volume
+- An approved source file for the private implementation
+- A generated sample file for public reproduction
+- No secrets stored in notebooks or GitHub
+
+## Landing design
+
+The tutorial uses this generalized structure:
+
+```text
+catalog: work_order_ai
+schema:  bronze
+volume:  raw_files
+path:    /Volumes/work_order_ai/bronze/raw_files/
 ```
 
-## Databricks setup checklist
+A Unity Catalog volume provides a governed location for source files before they are read by the Bronze ingestion notebook. Landing the file separately from table creation preserves the original input and makes ingestion easier to rerun and audit.
 
-- Create a dedicated public-project catalog/schema or equivalent isolated namespace.
-- Use only generated synthetic files.
-- Store secrets outside code and notebooks.
-- Document runtime and package assumptions.
-- Export source-controlled notebook/code versions without cell outputs containing sensitive information.
+## Walkthrough
 
-## GitHub setup checklist
+### 1. Open Catalog Explorer
 
-- Protect `main` after the first successful CI run.
-- Require the CI check before merging.
-- Use issues and pull requests even as a solo developer.
-- Never store Databricks tokens, workspace URLs, or credentials in the repository.
+Open the intended catalog and Bronze schema, then select the `raw_files` volume.
 
-## Status
+### 2. Upload the source file
 
-Local packaging and CI configuration exist. Databricks public-environment details will be recorded when the synthetic Bronze implementation is recreated.
+Select **Upload to this volume**, choose the approved source file, verify the destination volume, and upload it.
+
+Screenshot evidence for this step must show the Databricks workflow without displaying records, credentials, employer identifiers, or private browser information.
+
+### 3. Confirm the landed file
+
+Open the volume’s **Files** view and verify that the expected file appears. The screenshot published in this tutorial will be cropped or redacted so that owner email, private metadata, and operational details are not visible.
+
+### 4. Verify readability
+
+Use a small notebook cell to confirm that Databricks can access the landed file. Do not publish a preview of real rows.
+
+```python
+source_path = "/Volumes/work_order_ai/bronze/raw_files/synthetic_workorders.csv"
+
+source_df = (
+    spark.read
+    .option("header", True)
+    .option("inferSchema", False)
+    .csv(source_path)
+)
+
+print(source_df.columns)
+print(source_df.limit(0).count())
+```
+
+The public example deliberately references `synthetic_workorders.csv`. Private filenames and paths should not be copied into GitHub.
+
+## Evidence checklist
+
+- [ ] Catalog, schema, volume, and purpose are explained
+- [ ] Upload interface is documented
+- [ ] Landed-file confirmation is documented
+- [ ] A safe read-verification example is included
+- [ ] Screenshots contain no real rows or employer identifiers
+- [ ] Problems and fixes are recorded
+- [ ] The source file itself is not committed
+
+## Problems and resolutions
+
+Use this format for each genuine implementation issue:
+
+> **Problem → Impact → Root cause → Resolution → Validation → Remaining limitation**
+
+Examples may include file-size limits, incorrect destinations, permission errors, CSV parsing options, or unexpected delimiters. Public examples must omit sensitive paths and values.
+
+## Output
+
+A source file that is accessible to the private Databricks workspace and a public tutorial that can be reproduced with independently generated sample data.
+
+## Next step
+
+Build the Bronze Delta tables and parameterized ingestion notebook in [Issue #3](https://github.com/terziceh/workorder-ai-flywheel/issues/3).
