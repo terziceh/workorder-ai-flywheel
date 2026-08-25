@@ -44,8 +44,6 @@ Select **Upload to this volume**, choose the approved source file, verify the de
 
 > **Figure 1 — Opening the Unity Catalog upload workflow.** The destination is the `raw_files` volume inside the Bronze schema. At this stage, Databricks stores the source file but has not yet transformed it into a Delta table.
 
-Screenshot evidence for this step must show the Databricks workflow without displaying records, credentials, employer identifiers, or private browser information.
-
 ### 3. Confirm the landed file
 
 Open the volume’s **Files** view and verify that the expected file appears.
@@ -67,29 +65,34 @@ print(source_df.columns)
 print(source_df.limit(0).count())
 ```
 
-The public example deliberately references `synthetic_workorders.csv`. Private filenames and paths should not be copied into GitHub.
+The public example deliberately references `synthetic_workorders.csv`. The private notebook successfully read the authorized source and verified that the dataset was non-empty; its record previews and outputs are intentionally excluded from GitHub.
 
 ## Evidence checklist
 
-- [ ] Catalog, schema, volume, and purpose are explained
-- [ ] Upload interface is documented
-- [ ] Landed-file confirmation is documented
-- [ ] A safe read-verification example is included
-- [ ] Screenshots contain no real rows or employer identifiers
-- [ ] Problems and fixes are recorded
-- [ ] The source file itself is not committed
+- [x] Catalog, schema, volume, and purpose are explained
+- [x] Upload interface is documented
+- [x] Landed-file confirmation is documented
+- [x] A safe read-verification example is included
+- [x] Screenshots contain no real rows or employer identifiers
+- [x] The public/private evidence boundary is documented
+- [x] The source file itself is not committed
 
 ## Problems and resolutions
 
-Use this format for each genuine implementation issue:
+No blocking file-upload problem occurred. The source landed successfully in the intended Unity Catalog volume and was readable from the private notebook.
 
-> **Problem → Impact → Root cause → Resolution → Validation → Remaining limitation**
-
-Examples may include file-size limits, incorrect destinations, permission errors, CSV parsing options, or unexpected delimiters. Public examples must omit sensitive paths and values.
+The first downstream issue appeared during the attempted Delta write: source column names contained characters that Delta would not accept. That problem belongs to the Bronze ingestion stage and is documented for resolution in [Issue #3](https://github.com/terziceh/workorder-ai-flywheel/issues/3).
 
 ## Output
 
-A source file that is accessible to the private Databricks workspace and a public tutorial that can be reproduced with independently generated sample data.
+- The authorized source is accessible in the private Databricks workspace.
+- The repository contains a reproducible synthetic companion dataset.
+- The public tutorial documents the landing workflow without distributing source records.
+- Sanitized screenshots provide evidence of the upload and landed-file verification.
+
+## Status
+
+Issue #2 is complete.
 
 ## Next step
 
