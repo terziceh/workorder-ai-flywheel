@@ -78,13 +78,13 @@ flowchart TD
 
 ## Current status
 
-**Current issue:** [#2 — Load the source data into Databricks and document the setup](https://github.com/terziceh/workorder-ai-flywheel/issues/2)
+**Current issue:** [#3 — Build the Bronze tables and Databricks ingestion notebook](https://github.com/terziceh/workorder-ai-flywheel/issues/3)
 
 - [x] Repository foundation and public Project board
 - [x] Privacy boundary
 - [x] Documentation and issue structure
 - [x] Repository CI
-- [ ] Complete the sanitized Databricks source-landing walkthrough
+- [x] Complete the sanitized Databricks source-landing walkthrough
 - [ ] Build and validate the Bronze ingestion notebook
 - [ ] Continue through Silver, Gold, and modeling
 
