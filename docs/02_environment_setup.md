@@ -40,6 +40,10 @@ Open the intended catalog and Bronze schema, then select the `raw_files` volume.
 
 Select **Upload to this volume**, choose the approved source file, verify the destination volume, and upload it.
 
+![Databricks dialog for uploading a source file to a Unity Catalog volume](assets/databricks/01-volume-upload-dialog.jpg)
+
+> **Figure 1 — Opening the Unity Catalog upload workflow.** The destination is the `raw_files` volume inside the Bronze schema. At this stage, Databricks stores the source file but has not yet transformed it into a Delta table.
+
 Screenshot evidence for this step must show the Databricks workflow without displaying records, credentials, employer identifiers, or private browser information.
 
 ### 3. Confirm the landed file
@@ -48,7 +52,7 @@ Open the volume’s **Files** view and verify that the expected file appears.
 
 ![Databricks Unity Catalog volume showing the landed work-order source file](assets/databricks/02-source-file-landed.jpg)
 
-> **Figure 1 — Confirming the landed source file.** Databricks displays the uploaded CSV inside the governed `raw_files` volume. The screenshot is cropped to exclude ownership information and other private metadata. The public reproduction uses a synthetic file even when the private implementation uses an authorized operational source.
+> **Figure 2 — Confirming the landed source file.** Databricks displays the uploaded CSV inside the governed `raw_files` volume. The screenshot is cropped to exclude ownership information and other private metadata. The public reproduction uses a synthetic file even when the private implementation uses an authorized operational source.
 
 ### 4. Verify readability
 
