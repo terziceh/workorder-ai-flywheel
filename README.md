@@ -1,8 +1,8 @@
-# Work Order AI Data Flywheel
+# Work Order Data Flywheel
 
 [![CI](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml/badge.svg)](https://github.com/terziceh/workorder-ai-flywheel/actions/workflows/ci.yml)
 
-**Project board:** [Work Order AI Data Flywheel](https://github.com/users/terziceh/projects/7)
+**Project board:** [Work Order Data Flywheel](https://github.com/users/terziceh/projects/7)
 
 An end-to-end build log and tutorial for developing a Databricks lakehouse, work-code recommendation model, and human-review data flywheel.
 
