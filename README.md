@@ -4,27 +4,27 @@
 
 **Project board:** [Work Order AI Data Flywheel](https://github.com/users/terziceh/projects/7)
 
-An end-to-end tutorial for building a Databricks lakehouse, small language model (SLM) work-code recommendation engine, human-review application, and continuous feedback flywheel using independently generated facilities work orders.
+An end-to-end build log and tutorial for developing a Databricks lakehouse, work-code recommendation model, and human-review data flywheel.
 
 > [!IMPORTANT]
-> This independent portfolio project uses exclusively synthetic data and a fictional work-code taxonomy. It contains no employer records, identifiers, schemas, screenshots, source code, architecture, or confidential business logic.
+> The system may be developed and validated privately with authorized operational data. No source dataset is published. Every record, identifier, taxonomy example, screenshot preview, and reproducible result committed to this public repository must be synthetic, fictionalized, sanitized, or safely generalized.
 
-## What this repository teaches
+## What this repository demonstrates
 
-This repository documents the complete build—not only the final model:
+This repository follows the actual engineering dependency chain:
 
-1. Define the business problem and success criteria.
-2. Manage delivery with GitHub Projects, issues, branches, pull requests, and milestones.
-3. Generate reproducible synthetic facilities data.
-4. Ingest source batches into a Databricks Bronze layer.
-5. Clean and validate work orders in Silver.
-6. Create training, inference, feedback, and monitoring tables in Gold.
-7. Establish a TF-IDF recommendation baseline.
-8. Build and evaluate an SLM recommendation layer.
-9. Capture human accept, correct, and flag decisions.
-10. Convert approved feedback into evaluation and retraining data.
-11. Build the reviewer application.
-12. Add application CI/CD only after the model and app are stable.
+1. Define the business problem and privacy boundary.
+2. Manage the work through GitHub Projects and implementation issues.
+3. Land the source file in a governed Databricks Unity Catalog volume.
+4. Build a traceable Bronze Delta ingestion notebook.
+5. Profile and validate Bronze before downstream use.
+6. Clean, standardize, and quality-check records in Silver.
+7. Build versioned Gold training, inference, and evaluation datasets.
+8. Analyze historical labels and define a defensible modeling strategy.
+9. Train and evaluate a TF-IDF recommendation baseline.
+10. Build and validate a hybrid SLM recommendation model.
+11. Connect the approved model to a reviewer application and feedback flywheel.
+12. Add application deployment automation only after the model and app are stable.
 
 ## Business problem
 
@@ -36,47 +36,57 @@ The proposed solution provides ranked work-code recommendations while keeping a 
 
 ```mermaid
 flowchart TD
-    A["Synthetic source batches"] --> B["Bronze: raw records"]
+    A["Source file landing"] --> B["Bronze: raw and traceable"]
     B --> C["Silver: clean and validated"]
-    C --> D["Gold: ML and feedback tables"]
-    D --> E["Baseline and SLM"]
+    C --> D["Gold: versioned ML datasets"]
+    D --> E["Baseline and hybrid SLM"]
     E --> F["Reviewer application"]
     F --> G["Human feedback"]
-    G --> H["Evaluation and retraining"]
-    H --> E
+    G --> D
 ```
 
-## Build walkthrough
+## Current implementation plan
 
-| Step | Chapter | Planned outcome |
+| Issue | Deliverable | Completion evidence |
 |---:|---|---|
-| 0 | [Business problem](docs/00_business_problem.md) | Users, risks, scope, and success metrics |
-| 1 | [GitHub project setup](docs/01_github_project_setup.md) | Board, milestones, issues, branches, PRs, and current CI |
-| 2 | [Environment setup](docs/02_environment_setup.md) | Reproducible local, GitHub, and Databricks configuration |
-| 3 | [Synthetic data](docs/03_synthetic_data.md) | Safe work orders with realistic quality issues |
-| 4 | [Bronze ingestion](docs/04_bronze_ingestion.md) | Raw, traceable, idempotent Delta ingestion |
-| 5 | [Silver transformations](docs/05_silver_transformations.md) | Standardized text, types, labels, and quality flags |
-| 6 | [Gold data products](docs/06_gold_data_products.md) | Training, inference, feedback, evaluation, and monitoring tables |
-| 7 | [Baseline model](docs/07_baseline_model.md) | Leakage-resistant Top-1/Top-3 benchmark |
-| 8 | [SLM recommendation engine](docs/08_slm_recommendation_engine.md) | Context-aware, structured recommendations |
-| 9 | [Feedback flywheel](docs/09_feedback_flywheel.md) | Reviewer actions converted into governed learning data |
-| 10 | [Reviewer application](docs/10_reviewer_application.md) | Accept, correct, and flag workflow |
-| 11 | [CI/CD and deployment](docs/11_ci_cd_and_deployment.md) | Tested release and deployment workflow after model completion |
-| 12 | [Results and lessons](docs/12_results_and_lessons.md) | Metrics, problems, resolutions, limitations, and next steps |
+| [#2](https://github.com/terziceh/workorder-ai-flywheel/issues/2) | Load source data into Databricks | Safe screenshots, landing-path explanation, and read verification |
+| [#3](https://github.com/terziceh/workorder-ai-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, metadata, reconciliation, and rerun test |
+| [#4](https://github.com/terziceh/workorder-ai-flywheel/issues/4) | Profile and validate Bronze | Repeatable quality report and documented fixes |
+| [#5](https://github.com/terziceh/workorder-ai-flywheel/issues/5) | Build the Silver pipeline | Clean records, quality exceptions, tests, and reconciliation |
+| [#6](https://github.com/terziceh/workorder-ai-flywheel/issues/6) | Build Gold ML datasets | Reproducible train, validation, test, inference, and evaluation outputs |
+| [#7](https://github.com/terziceh/workorder-ai-flywheel/issues/7) | Analyze labels and modeling strategy | Label-quality findings, taxonomy decisions, and evaluation plan |
+| [#8](https://github.com/terziceh/workorder-ai-flywheel/issues/8) | Train the TF-IDF baseline | MLflow run, Top-k metrics, error analysis, and saved pipeline |
+| [#9](https://github.com/terziceh/workorder-ai-flywheel/issues/9) | Build the hybrid SLM model | Baseline comparison, structured inference, fallbacks, and model card |
+
+## Tutorial chapters
+
+| Chapter | Purpose |
+|---|---|
+| [Business problem](docs/00_business_problem.md) | Users, risks, scope, and success metrics |
+| [GitHub project setup](docs/01_github_project_setup.md) | Board, issues, branches, pull requests, and current CI |
+| [Databricks and source setup](docs/02_environment_setup.md) | Governed file landing and safe screenshot walkthrough |
+| [Public synthetic companion data](docs/03_synthetic_data.md) | Reproducible examples without distributing the source dataset |
+| [Bronze ingestion](docs/04_bronze_ingestion.md) | Parameterized notebook, Delta tables, metadata, and validation |
+| [Silver transformations](docs/05_silver_transformations.md) | Cleaning, standardization, quality flags, and exceptions |
+| [Gold data products](docs/06_gold_data_products.md) | Versioned ML datasets and leakage-resistant splits |
+| [Baseline model](docs/07_baseline_model.md) | Label analysis and TF-IDF benchmark |
+| [SLM recommendation engine](docs/08_slm_recommendation_engine.md) | Constrained hybrid recommendations and evaluation |
+| [Feedback flywheel](docs/09_feedback_flywheel.md) | Governed reviewer actions and future learning data |
+| [Reviewer application](docs/10_reviewer_application.md) | Accept, correct, flag, and abstain workflow |
+| [CI/CD and deployment](docs/11_ci_cd_and_deployment.md) | Release workflow after model and application stability |
+| [Results and lessons](docs/12_results_and_lessons.md) | Metrics, problems, fixes, limitations, and next steps |
 
 ## Current status
 
-**Milestone:** `v0.1 — Documentation and Project Setup`
+**Current issue:** [#2 — Load the source data into Databricks and document the setup](https://github.com/terziceh/workorder-ai-flywheel/issues/2)
 
-- [x] Repository foundation
-- [x] Public privacy boundary
-- [x] Tutorial documentation structure
-- [x] Synthetic-data generator foundation
-- [x] Unit and integration test foundation
-- [x] Repository CI workflow
-- [x] Publish GitHub repository and Project board
-- [ ] Recreate the existing Bronze design using synthetic data
-- [ ] Validate Bronze ingestion through CI fixtures
+- [x] Repository foundation and public Project board
+- [x] Privacy boundary
+- [x] Documentation and issue structure
+- [x] Repository CI
+- [ ] Complete the sanitized Databricks source-landing walkthrough
+- [ ] Build and validate the Bronze ingestion notebook
+- [ ] Continue through Silver, Gold, and modeling
 
 ## Repository organization
 
@@ -84,53 +94,40 @@ flowchart TD
 .
 ├── .github/             Issue templates, PR template, and current CI
 ├── configs/             Non-sensitive configuration
-├── docs/                Numbered build tutorial and reference documentation
+├── docs/                Build tutorial and engineering decisions
 ├── notebooks/           Exploration and communication only
 ├── sample_data/         Small generated examples only
 ├── scripts/             Developer entry points
 ├── src/workorder_ai/    Reusable pipeline and model code
-├── tests/               Unit, integration, and later data/model tests
+├── tests/               Unit, integration, data, and model tests
 ├── CONTRIBUTING.md
 ├── Makefile
 ├── pyproject.toml
 └── README.md
 ```
 
-## Quick start
+## Evidence standard
 
-Requires Python 3.11 or newer.
+Every technical stage should include:
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
-make generate-sample
-make check
-```
+- Objective, input, output, and table grain
+- Implementation or notebook walkthrough
+- Validation and reconciliation
+- Problems, root causes, fixes, and tradeoffs
+- Tests and reproducibility instructions
+- Sanitized screenshots or synthetic output
+- Related issue, commit, or pull request
+- Known limitations and next dependency
 
-## Documentation pattern
+## Privacy and screenshot rules
 
-Every technical chapter documents:
+Public screenshots must not expose real records, employer or employee identifiers, email addresses, workspace URLs, credentials, internal storage paths, or unauthorized operational metrics. Screenshots are reviewed and cropped or redacted before publication. Example rows and public model demonstrations use synthetic data.
 
-- Objective and rationale
-- Inputs and table grain
-- Implementation
-- Validation and tests
-- Problems encountered
-- Resolution and tradeoffs
-- Outputs
-- Related GitHub issues and pull requests
-- Next dependency
+See [Security and Privacy](docs/security_and_privacy.md).
 
-This makes the repository both a project case study and a reproducible tutorial.
+## GitHub Actions scope
 
-## Current GitHub Actions scope
-
-The initial CI workflow checks formatting, linting, tests, and synthetic-data generation. Model validation will be added with the baseline milestone. Application build and deployment workflows are intentionally deferred until the reviewer application exists.
-
-## Privacy rule
-
-All public work orders, facilities, assets, labels, mappings, and quality problems must be created independently for this repository. See [Security and Privacy](docs/security_and_privacy.md).
+Current CI checks the public Python package, tests, and synthetic-data generation. Data and model checks will be added when their implementation reaches the repository. Application build and deployment workflows remain intentionally deferred until the reviewer application exists.
 
 ## License
 
