@@ -1,0 +1,38 @@
+name: Model experiment
+description: Plan a reproducible model or evaluation experiment
+title: "experiment: "
+labels: ["modeling"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+    validations:
+      required: true
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Baseline and comparison
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Dataset and split strategy
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Success metrics
+    validations:
+      required: true
+  - type: checkboxes
+    id: safeguards
+    attributes:
+      label: Safeguards
+      options:
+        - label: The experiment uses only independently generated or approved public data.
+          required: true
+        - label: Leakage risks and inference-time feature availability are documented.
+          required: true

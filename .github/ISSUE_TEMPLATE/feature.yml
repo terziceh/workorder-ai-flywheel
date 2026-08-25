@@ -1,0 +1,39 @@
+name: Feature
+description: Plan a new project capability
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What capability should be delivered?
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: User or business value
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Implementation complete
+        - [ ] Tests added or updated
+        - [ ] Documentation updated
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and risks
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: This issue requires no employer data or confidential information.
+          required: true
