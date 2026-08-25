@@ -44,7 +44,11 @@ Screenshot evidence for this step must show the Databricks workflow without disp
 
 ### 3. Confirm the landed file
 
-Open the volume’s **Files** view and verify that the expected file appears. The screenshot published in this tutorial will be cropped or redacted so that owner email, private metadata, and operational details are not visible.
+Open the volume’s **Files** view and verify that the expected file appears.
+
+![Databricks Unity Catalog volume showing the landed work-order source file](assets/databricks/02-source-file-landed.jpg)
+
+> **Figure 1 — Confirming the landed source file.** Databricks displays the uploaded CSV inside the governed `raw_files` volume. The screenshot is cropped to exclude ownership information and other private metadata. The public reproduction uses a synthetic file even when the private implementation uses an authorized operational source.
 
 ### 4. Verify readability
 
