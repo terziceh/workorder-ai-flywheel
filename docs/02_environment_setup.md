@@ -61,12 +61,7 @@ Use a small notebook cell to confirm that Databricks can access the landed file.
 ```python
 source_path = "/Volumes/work_order_ai/bronze/raw_files/synthetic_workorders.csv"
 
-source_df = (
-    spark.read
-    .option("header", True)
-    .option("inferSchema", False)
-    .csv(source_path)
-)
+source_df = spark.read.option("header", True).option("inferSchema", False).csv(source_path)
 
 print(source_df.columns)
 print(source_df.limit(0).count())
