@@ -168,7 +168,7 @@ Private totals are not published. The public evidence records that reconciliatio
 - Batch identifiers, record hashes, and incremental controls are not implemented; evaluate them if recurring loads require them.
 - Empty cleaned names and collisions with reserved metadata fields are not explicitly checked.
 - A separate rerun verification is not evidenced by the uploaded notebook.
-- Detailed null, uniqueness, and label-quality analysis belongs to Bronze profiling and Silver.
+- Initial missing-value and duplicate profiling is now documented below; label correctness and full-column date conversion remain unvalidated.
 
 These are deliberate scope decisions rather than hidden production claims.
 
@@ -187,4 +187,95 @@ These are deliberate scope decisions rather than hidden production claims.
 
 ## Next step
 
-Profile and validate the Bronze data in [Issue #4](https://github.com/terziceh/workorder-flywheel/issues/4) before building Silver.
+Initial Bronze profiling is documented below. Next, implement the first [Silver transformations](05_silver_transformations.md) using those findings, while retaining the unresolved review items.
+
+## Bronze validation and profiling
+
+Related work: [Issue #4](https://github.com/terziceh/workorder-flywheel/issues/4). The private validation notebook was reviewed with its saved outputs; this documentation update did not rerun Databricks.
+
+### What we did
+
+We checked the structure of Bronze, measured missing values, investigated repeated records, inspected creation-date examples, and checked ingestion metadata. The goal was to understand what needs cleaning before Silver without changing the persisted Bronze table.
+
+| Check | What it tells us | What was done |
+|---|---|---|
+| Structure | Whether the table is readable and how its fields are represented | Nonempty assertion and schema inspection |
+| Field names | Which descriptions and shops belong to a work order versus a phase | Explicit mapping with missing-column and collision checks |
+| Missing values | Where information is absent | Null, empty-string, and whitespace-only counts and percentages |
+| Grain | Whether repeated work-order numbers reflect phase detail | Compared total rows, distinct work orders, distinct work-order/phase pairs, and distinct complete source rows |
+| Exact repeats | Which exported records match across every business field | Window-based occurrence counts and a private review output |
+| Creation dates | What populated source dates look like | Inspected a limited distinct-value sample |
+| Lineage | Whether records retain source and ingestion information | Saved output shows neither lineage field was missing |
+
+### Clarifying field names
+
+The reviewed validation notebook applies this mapping to its in-memory DataFrame:
+
+| Export field | Descriptive name |
+|---|---|
+| `description1` | `work_order_description` |
+| `shop12` | `work_order_shop` |
+| `description14` | `phase_description` |
+| `shop16` | `phase_shop` |
+
+No Delta write appears in the validation notebook, so the mapping alone does not persist new names in Bronze. Before building Silver, confirm which names the persisted table exposes and choose one place to own the mapping. The existing validation mapping expects the old names and will fail its missing-column check if applied unchanged to an already-renamed table.
+
+### Missing-value check
+
+The notebook profiles business columns separately from ingestion metadata. The core condition is:
+
+```python
+missing_value = F.col(column).isNull() | (
+    F.regexp_replace(F.col(column), r"\s+", "") == ""
+)
+```
+
+Here, `column` is the source field being profiled and `F` is `pyspark.sql.functions`. The notebook sums this condition for each source column and calculates a percentage; it does not modify the values.
+
+Missingness is concentrated in supplemental fields, so an absent asset or location should not automatically cause the whole record to be discarded. Populated fields still need business validation: a nonblank work code is not proof of a correct label. Counts should be reviewed alongside percentages because rounding can hide small nonzero counts. Text placeholders such as `N/A` are not included in this missing-value rule.
+
+### Grain and duplicate review
+
+A work order can have multiple phases, so a repeated work-order number is not enough to label a row a duplicate. The comparison of distinct complete source records with distinct work-order/phase pairs supports one row per work order and phase as a candidate business grain after exact repeats are removed; the business definition still needs confirmation.
+
+The duplicate check excludes ingestion metadata and counts matching source records:
+
+```python
+from pyspark.sql.window import Window
+
+duplicate_window = Window.partitionBy(*source_columns)
+duplicate_rows = source_df.withColumn(
+    "occurrences", F.count("*").over(duplicate_window)
+).filter(F.col("occurrences") > 1)
+```
+
+This snippet follows the notebook's setup of `source_columns` and `source_df`. It retains every occurrence, including the first, for comparison. Consequently, the number of rows in the review output is larger than the number of excess copies.
+
+The affected records were prepared for private review, including their asset associations. Some may reflect source or export issues, but the cause has not been established. No records were deleted, and automatic deduplication is not approved. The duplicate preview itself contains source fields and occurrence counts, not ingestion metadata; it does not establish which ingestion or export produced the repetition.
+
+The notebook prepares a downloadable review table. Its code does not establish that a CSV was downloaded or saved elsewhere.
+
+### Creation dates and lineage
+
+Creation-date inspection was exploratory: populated values were sampled, not converted across the entire column. Silver still needs a confirmed format and a conversion-failure check. Missing dates will be flagged rather than invented.
+
+The saved lineage result shows no missing source filename or ingestion timestamp under the implemented checks. The filename check covers nulls, empty strings, and ordinary surrounding spaces; it does not separately normalize all whitespace characters. This confirms basic completeness, not the authenticity of the filenames or timestamps.
+
+### What this means for Silver
+
+We now have enough direction for a first Silver implementation:
+
+- Keep identifiers as strings to preserve leading zeros.
+- Convert empty and whitespace-only values to null.
+- Trim surrounding whitespace without changing descriptive wording.
+- Parse creation dates with a confirmed format and flag failures.
+- Keep optional fields nullable instead of dropping otherwise useful records.
+- Retain and flag repeated records until their review is complete.
+- Preserve ingestion metadata.
+- Reconcile row counts and report quality flags after transformation.
+
+These are proposed transformation rules, not completed Silver behavior. The initial profiling is not certification that every field or label is correct. Full-column date conversion, code-reference checks, deeper relationship checks, and recurring-file processing remain outside the completed work.
+
+### Public evidence boundary
+
+The uploaded notebook contains real row previews, date values, counts, and operational outputs. It and the duplicate-review CSV are not published. This chapter shares generalized methods and findings without publishing private records, exact operational counts, or percentages.
