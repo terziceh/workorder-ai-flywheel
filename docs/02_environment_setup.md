@@ -1,6 +1,6 @@
 # 02 — Databricks Setup and Source-File Landing
 
-Related issue: [#2 — Load the source data into Databricks and document the setup](https://github.com/terziceh/workorder-ai-flywheel/issues/2)
+Related issue: [#2 — Load the source data into Databricks and document the setup](https://github.com/terziceh/workorder-flywheel/issues/2)
 
 ## Objective
 
@@ -62,8 +62,10 @@ source_path = "/Volumes/work_order_ai/bronze/raw_files/synthetic_workorders.csv"
 source_df = spark.read.option("header", True).option("inferSchema", False).csv(source_path)
 
 print(source_df.columns)
-print(source_df.limit(0).count())
+print(f"Readable source is non-empty: {source_df.limit(1).count() > 0}")
 ```
+
+The one-row count checks that at least one readable record exists without displaying record values; counting a zero-row limit would always return zero. For the actual ingestion, use the multiline and quote-escape settings in the [Bronze walkthrough](04_bronze_ingestion.md).
 
 The public example deliberately references `synthetic_workorders.csv`. The private notebook successfully read the authorized source and verified that the dataset was non-empty; its record previews and outputs are intentionally excluded from GitHub.
 
@@ -81,7 +83,7 @@ The public example deliberately references `synthetic_workorders.csv`. The priva
 
 No blocking file-upload problem occurred. The source landed successfully in the intended Unity Catalog volume and was readable from the private notebook.
 
-The first downstream issue appeared during the attempted Delta write: source column names contained characters that Delta would not accept. That problem belongs to the Bronze ingestion stage and is documented for resolution in [Issue #3](https://github.com/terziceh/workorder-ai-flywheel/issues/3).
+The first downstream issue appeared during the attempted Delta write: source column names contained characters that Delta would not accept. That problem belongs to the Bronze ingestion stage and was resolved through column-name standardization in [Issue #3](https://github.com/terziceh/workorder-flywheel/issues/3).
 
 ## Output
 
@@ -96,4 +98,4 @@ Issue #2 is complete.
 
 ## Next step
 
-Build the Bronze Delta tables and parameterized ingestion notebook in [Issue #3](https://github.com/terziceh/workorder-ai-flywheel/issues/3).
+The full-refresh Bronze ingestion notebook is complete and documented in the [Bronze walkthrough](04_bronze_ingestion.md). The next active stage is [Issue #4: Profile and validate Bronze](https://github.com/terziceh/workorder-flywheel/issues/4), which will inform the Silver rules.
