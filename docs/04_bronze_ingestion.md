@@ -14,12 +14,18 @@ The Bronze layer converts the landed CSV into a reliable Delta table without cha
 | Load | Makes the landed file available to the data platform |
 | Standardize names | Prevents Delta errors and simplifies future queries |
 | Add lineage | Records when and from which file the data arrived |
-| Save as Delta | Creates a governed, queryable source-of-truth table |
-| Reconcile | Confirms that the load did not unexpectedly lose or add records |
+| Save as Delta | Creates a queryable copy of the source snapshot |
+| Reconcile | Checks that readable source and persisted table row totals match |
+
+## Evidence reviewed
+
+The uploaded private ingestion notebook contains the five steps below and a saved `Bronze ingestion validated.` message after the count assertion. This review inspected the notebook and its saved evidence; it did not execute a new Databricks run or verify a separate rerun test. Public snippets substitute a synthetic filename and omit private counts and outputs.
 
 ## Grain and design boundary
 
 One row represents one work-order record as received from the source file. Bronze makes only technical changes; business cleaning, type conversion, text preprocessing, label decisions, and feature engineering are deferred to Silver and Gold.
+
+The notebook uses ordinary Python configuration variables rather than widgets or a reusable ingestion function. It does not establish that a work-order identifier is unique: the business grain and candidate keys remain to be profiled.
 
 ## 1. Load the source file
 
@@ -38,6 +44,15 @@ raw_df = (
     .csv(source_path)
 )
 ```
+
+| Option | Why it is used |
+|---|---|
+| `header=True` | Uses the CSV header as column names |
+| `inferSchema=False` | Keeps source columns as strings, avoiding inferred numeric or date conversions |
+| `multiLine=True` | Supports line breaks inside quoted CSV fields |
+| `escape='"'` | Supports doubled quotation marks inside quoted fields |
+
+These settings support the expected CSV format; they do not prove that every field parsed correctly. No explicit malformed-record capture or quarantine is implemented.
 
 The public example uses `synthetic_workorders.csv`. The private implementation uses the authorized source, which is not committed to GitHub.
 
@@ -99,7 +114,7 @@ bronze_df = (
 )
 ```
 
-The private notebook uses the actual landed filename. The public snippet uses a fictional filename.
+The private notebook uses the actual landed filename. The public snippet uses a fictional filename. `_source_file` is a manually supplied literal, so it must be updated along with `source_path` when changing inputs; it is not automatically extracted from the file. `_ingested_at` records the write-time evaluation of the timestamp expression, not the original work-order creation time.
 
 ## 4. Write the Bronze Delta table
 
@@ -115,6 +130,8 @@ The current source is a controlled historical snapshot, so the first version use
 )
 ```
 
+`overwriteSchema=true` also permits the incoming schema to replace the existing table schema; it is not a schema-validation check. Only run this against the intended full-snapshot target, because overwrite replaces its current contents. A rerun refreshes the ingestion timestamp, so it is not a byte-for-byte identical result.
+
 This choice is intentionally simple. Incremental batch tracking, append behavior, and change-data handling should be added only when recurring source deliveries require them.
 
 ## 5. Reconcile source and Bronze counts
@@ -129,6 +146,8 @@ assert source_count == bronze_count, "Source and Bronze record counts do not mat
 
 print("Bronze ingestion validated.")
 ```
+
+Matching counts do not prove correct CSV parsing, matching field values, unique business keys, or valid labels. The assertion runs after the write and does not roll back the table if it fails. The source should remain unchanged during the read, write, and reconciliation because these are separate Spark actions.
 
 Private totals are not published. The public evidence records that reconciliation passed without exposing operational volume.
 
@@ -146,7 +165,9 @@ Private totals are not published. The public evidence records that reconciliatio
 
 - The notebook performs a full refresh rather than incremental ingestion.
 - Malformed-record quarantine is not implemented in this version.
-- Batch identifiers and record hashes will be introduced when recurring loads require them.
+- Batch identifiers, record hashes, and incremental controls are not implemented; evaluate them if recurring loads require them.
+- Empty cleaned names and collisions with reserved metadata fields are not explicitly checked.
+- A separate rerun verification is not evidenced by the uploaded notebook.
 - Detailed null, uniqueness, and label-quality analysis belongs to Bronze profiling and Silver.
 
 These are deliberate scope decisions rather than hidden production claims.
