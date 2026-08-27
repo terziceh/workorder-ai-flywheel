@@ -50,7 +50,7 @@ flowchart TD
 | Issue | Deliverable | Completion evidence |
 |---:|---|---|
 | [#2](https://github.com/terziceh/workorder-flywheel/issues/2) | Load source data into Databricks | Safe screenshots, landing-path explanation, and read verification |
-| [#3](https://github.com/terziceh/workorder-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, metadata, reconciliation, and rerun test |
+| [#3](https://github.com/terziceh/workorder-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, file/timestamp metadata, and saved count reconciliation; full-refresh rerun strategy documented |
 | [#4](https://github.com/terziceh/workorder-flywheel/issues/4) | Profile and validate Bronze | Repeatable quality report and documented fixes |
 | [#5](https://github.com/terziceh/workorder-flywheel/issues/5) | Build the Silver pipeline | Clean records, quality exceptions, tests, and reconciliation |
 | [#6](https://github.com/terziceh/workorder-flywheel/issues/6) | Build Gold ML datasets | Reproducible train, validation, test, inference, and evaluation outputs |
@@ -66,7 +66,7 @@ flowchart TD
 | [GitHub project setup](docs/01_github_project_setup.md) | Board, issues, branches, pull requests, and current CI |
 | [Databricks and source setup](docs/02_environment_setup.md) | Governed file landing and safe screenshot walkthrough |
 | [Public synthetic companion data](docs/03_synthetic_data.md) | Reproducible examples without distributing the source dataset |
-| [Bronze ingestion](docs/04_bronze_ingestion.md) | Parameterized notebook, Delta tables, metadata, and validation |
+| [Bronze ingestion](docs/04_bronze_ingestion.md) | Full-refresh notebook, Delta table, basic lineage, and count reconciliation |
 | [Silver transformations](docs/05_silver_transformations.md) | Cleaning, standardization, quality flags, and exceptions |
 | [Gold data products](docs/06_gold_data_products.md) | Versioned ML datasets and leakage-resistant splits |
 | [Baseline model](docs/07_baseline_model.md) | Label analysis and TF-IDF benchmark |
@@ -86,7 +86,17 @@ flowchart TD
 - [x] Repository CI
 - [x] Complete the sanitized Databricks source-landing walkthrough
 - [x] Build and validate the Bronze ingestion notebook
+- [ ] Profile Bronze grain, missing values, duplicates, and parsing quality
+- [ ] Define repeatable Silver rules from the profiling findings
 - [ ] Continue through Silver, Gold, and modeling
+
+### Ingestion implemented
+
+The reviewed private notebook reads a landed CSV with source columns kept as strings, standardizes column names with a collision check, adds `_ingested_at` and `_source_file`, and overwrites the Bronze Delta snapshot. Its saved output confirms that the readable source and persisted Bronze row counts matched.
+
+This version uses configuration variables and a manually supplied source filename, not notebook widgets or incremental batch controls. Overwrite is the documented full-refresh strategy; the uploaded notebook does not establish a separate rerun test. Count reconciliation verifies row totals, not field-level parsing, uniqueness, or business correctness.
+
+See the [Bronze walkthrough](docs/04_bronze_ingestion.md) for code, explanations, and limitations. The original notebook and operational outputs remain private.
 
 ## Repository organization
 
