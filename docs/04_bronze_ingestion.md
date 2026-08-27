@@ -225,9 +225,7 @@ No Delta write appears in the validation notebook, so the mapping alone does not
 The notebook profiles business columns separately from ingestion metadata. The core condition is:
 
 ```python
-missing_value = F.col(column).isNull() | (
-    F.regexp_replace(F.col(column), r"\s+", "") == ""
-)
+missing_value = F.col(column).isNull() | (F.regexp_replace(F.col(column), r"\s+", "") == "")
 ```
 
 Here, `column` is the source field being profiled and `F` is `pyspark.sql.functions`. The notebook sums this condition for each source column and calculates a percentage; it does not modify the values.
@@ -244,9 +242,9 @@ The duplicate check excludes ingestion metadata and counts matching source recor
 from pyspark.sql.window import Window
 
 duplicate_window = Window.partitionBy(*source_columns)
-duplicate_rows = source_df.withColumn(
-    "occurrences", F.count("*").over(duplicate_window)
-).filter(F.col("occurrences") > 1)
+duplicate_rows = source_df.withColumn("occurrences", F.count("*").over(duplicate_window)).filter(
+    F.col("occurrences") > 1
+)
 ```
 
 This snippet follows the notebook's setup of `source_columns` and `source_df`. It retains every occurrence, including the first, for comparison. Consequently, the number of rows in the review output is larger than the number of excess copies.
