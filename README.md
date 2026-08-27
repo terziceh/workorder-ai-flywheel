@@ -51,7 +51,7 @@ flowchart TD
 |---:|---|---|
 | [#2](https://github.com/terziceh/workorder-flywheel/issues/2) | Load source data into Databricks | Safe screenshots, landing-path explanation, and read verification |
 | [#3](https://github.com/terziceh/workorder-flywheel/issues/3) | Build Bronze tables and ingestion notebook | Delta write, file/timestamp metadata, and saved count reconciliation; full-refresh rerun strategy documented |
-| [#4](https://github.com/terziceh/workorder-flywheel/issues/4) | Profile and validate Bronze | Repeatable quality report and documented fixes |
+| [#4](https://github.com/terziceh/workorder-flywheel/issues/4) | Profile and validate Bronze | Initial schema, missingness, grain, duplicate, date-sample, and lineage profiling; findings documented |
 | [#5](https://github.com/terziceh/workorder-flywheel/issues/5) | Build the Silver pipeline | Clean records, quality exceptions, tests, and reconciliation |
 | [#6](https://github.com/terziceh/workorder-flywheel/issues/6) | Build Gold ML datasets | Reproducible train, validation, test, inference, and evaluation outputs |
 | [#7](https://github.com/terziceh/workorder-flywheel/issues/7) | Analyze labels and modeling strategy | Label-quality findings, taxonomy decisions, and evaluation plan |
@@ -67,6 +67,7 @@ flowchart TD
 | [Databricks and source setup](docs/02_environment_setup.md) | Governed file landing and safe screenshot walkthrough |
 | [Public synthetic companion data](docs/03_synthetic_data.md) | Reproducible examples without distributing the source dataset |
 | [Bronze ingestion](docs/04_bronze_ingestion.md) | Full-refresh notebook, Delta table, basic lineage, and count reconciliation |
+| [Bronze validation](docs/04_bronze_ingestion.md#bronze-validation-and-profiling) | Checks performed, generalized findings, duplicate review, and Silver decisions |
 | [Silver transformations](docs/05_silver_transformations.md) | Cleaning, standardization, quality flags, and exceptions |
 | [Gold data products](docs/06_gold_data_products.md) | Versioned ML datasets and leakage-resistant splits |
 | [Baseline model](docs/07_baseline_model.md) | Label analysis and TF-IDF benchmark |
@@ -78,7 +79,7 @@ flowchart TD
 
 ## Current status
 
-**Current issue:** [#4 — Profile and validate the Bronze work-order data](https://github.com/terziceh/workorder-flywheel/issues/4)
+**Current work:** Initial Bronze profiling is documented under [#4](https://github.com/terziceh/workorder-flywheel/issues/4); next is the first Silver implementation under [#5](https://github.com/terziceh/workorder-flywheel/issues/5). This documentation update does not change issue states.
 
 - [x] Repository foundation and public Project board
 - [x] Privacy boundary
@@ -86,8 +87,10 @@ flowchart TD
 - [x] Repository CI
 - [x] Complete the sanitized Databricks source-landing walkthrough
 - [x] Build and validate the Bronze ingestion notebook
-- [ ] Profile Bronze grain, missing values, duplicates, and parsing quality
-- [ ] Define repeatable Silver rules from the profiling findings
+- [x] Profile Bronze structure, missing values, candidate grain, and exact repeats
+- [x] Inspect creation-date samples and check ingestion metadata
+- [x] Document initial Silver rules and unresolved review items
+- [ ] Validate full-column date conversion and implement the first Silver table
 - [ ] Continue through Silver, Gold, and modeling
 
 ### Ingestion implemented
@@ -97,6 +100,16 @@ The reviewed private notebook reads a landed CSV with source columns kept as str
 This version uses configuration variables and a manually supplied source filename, not notebook widgets or incremental batch controls. Overwrite is the documented full-refresh strategy; the uploaded notebook does not establish a separate rerun test. Count reconciliation verifies row totals, not field-level parsing, uniqueness, or business correctness.
 
 See the [Bronze walkthrough](docs/04_bronze_ingestion.md) for code, explanations, and limitations. The original notebook and operational outputs remain private.
+
+### Validation completed and what we learned
+
+We reviewed missing values, compared work-order and phase counts, isolated exact repeated source records for private review, inspected creation-date examples, and checked ingestion metadata. The saved lineage checks passed. No Bronze records were deleted or rewritten by the validation notebook.
+
+The findings support a simple Silver version: preserve identifiers as text, normalize blanks, trim surrounding spaces, parse dates with a confirmed format, retain optional fields, flag repeats, and reconcile counts. Work order plus phase is a candidate grain; duplicate removal and the source of the repeats remain unresolved. Date sampling is not full-column parsing validation.
+
+The notebook also clarified work-order and phase field names in memory. Before Silver, the persisted schema and ownership of that mapping must be confirmed.
+
+Read the [validation walkthrough](docs/04_bronze_ingestion.md#bronze-validation-and-profiling) and the [first Silver plan](docs/05_silver_transformations.md). Private previews, the uploaded notebook, review exports, and exact operational metrics are excluded from the public repository. Recurring-file automation remains deferred.
 
 ## Repository organization
 
